@@ -1,94 +1,71 @@
-// Radix Sort in C Programming
 #include <stdio.h>
 
-int p = 1;
-void printArray(int array[], int size);
-int getMax(int array[], int n);
-void countingSort(int array[], int size, int place);
-void radixsort(int array[], int size);
+int phase = 1;
+
+
+void printArray(int a[], int n)
+{
+	for (int i = 0; i < n; i++)
+		printf("%d ", a[i]);
+}
+
+
+int getMax(int a[], int n)
+{
+	int max = a[0];
+	for (int i = 1; i < n; i++)
+		if (a[i] > max)
+			max = a[i];
+	return max;
+}
+
+void countSort(int a[], int n, int pos)
+{
+	int op[n], p, val, i;
+	int count[10] = { 0 };
+
+	for (i = 0; i < n; i++)
+		++count[(a[i] / pos) % 10];
+
+	for (i = 1; i < 10; i++)
+		count[i] += count[i - 1];
+
+	for (i = n - 1; i >= 0; i--)
+	{
+		p = (a[i] / pos) % 10;
+		val = --count[p];
+		op[val] = a[i];
+	}
+
+	printf("\n after %d phase :", phase);
+	printArray(op, n);
+	phase++;
+
+	for (i = 0; i < n; i++)
+		a[i] = op[i];
+
+}
+
+void radixSort(int a[], int n)
+{
+	int m = getMax(a, n);
+	for (int pos = 1; m / pos > 0; pos *= 10)
+		countSort(a, n, pos);
+}
+
+
+
 
 
 int main()
 {
-	int array[100], n, i;
-
-	printf("Enter the number of items to be sorted: ");
+	int a[100], n, i;
+	printf("\n Enter the number of items to be sorted: ");
 	scanf("%d", &n);
-	printf("Enter items: ");
+	printf("\n Enter the items: ");
 	for (i = 0; i < n; i++)
-	{
-		scanf("%d", &array[i]);
-	}
-
-	radixsort(array, n);
+		scanf("%d", &a[i]);
+	radixSort(a, n);
 	printf("\nsorted sequence :");
-	printArray(array, n);
+	printArray(a, n);
 }
-
-
-void printArray(int array[], int size)
-{
-	for (int i = 0; i < size; ++i)
-	{
-		printf("%d  ", array[i]);
-	}
-
-	printf("\n");
-}
-
-// Function to get the largest element from an array
-int getMax(int array[], int n)
-{
-	int max = array[0];
-	for (int i = 1; i < n; i++)
-		if (array[i] > max)
-			max = array[i];
-	return max;
-}
-
-// Using counting sort to sort the elements in the basis of significant places
-void countingSort(int array[], int size, int place)
-{
-	int output[size + 1];
-
-	int count[10];
-
-	for (int i = 0; i < 10; ++i)
-		count[i] = 0;
-
-	// Calculate count of elements
-	for (int i = 0; i < size; i++)
-		count[(array[i] / place) % 10]++;
-
-	// Calculate cumulative count
-	for (int i = 1; i < 10; i++)
-		count[i] += count[i - 1];
-
-	// Place the elements in sorted order
-	for (int i = size - 1; i >= 0; i--)
-	{
-		output[count[(array[i] / place) % 10] - 1] = array[i];
-		count[(array[i] / place) % 10]--;
-	}
-
-	printf("\n after %d phase :", p);
-	printArray(output, size);
-	p++;
-
-	for (int i = 0; i < size; i++)
-		array[i] = output[i];
-}
-
-// function to implement radix sort
-void radixsort(int array[], int size)
-{
-	// Get maximum element
-	int max = getMax(array, size);
-
-	// Apply counting sort to sort elements based on place value.
-	for (int place = 1; max / place > 0; place *= 10)
-		countingSort(array, size, place);
-}
-
-
-
