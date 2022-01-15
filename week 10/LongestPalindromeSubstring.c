@@ -1,124 +1,64 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #define MAX 100
 
-void printSubStr(char string[MAX], int low, int high);
-
-int longestPalSubstr(char string[MAX]);
-
-int main()
-
+void longestPalSubstr(char str[MAX])
 {
-	char string[MAX];
+	int startIndex, endIndex = 1;
+	int n = strlen(str);
+	int dp[n][n];
+	int i, j, len;
 
-	printf("\nenter the input string: ");
+	for (i = 0; i < n; i++)
+		for (j = 0; j < n; j++)
+			dp[i][j] = 0;
 
-	scanf("%[^\n]%*c", string);
+	for (i = 0; i < n; i++)
+		dp[i][i] = 1;	//string with one char is palindrome
 
-	// Display length of resultant palindrome
-	printf("\nLength is: %d", longestPalSubstr(string));
-
-	return 0;
-
-}
-
-void printSubStr(char string[MAX], int low, int high)
-{
-	for (int i = low; i <= high; ++i)
-
-		printf("%c", string[i]);
-
-}
-
-int longestPalSubstr(char string[MAX])
-{
-	// Get length of input string
-
-	int n = strlen(string);
-
-	if (n == 0)
-
+	for (i = 0; i < n - 1; i++)
 	{
-		// When string is empty
-		return 0;
-
-	}
-
-	// table[i][j] will be true if substring
-	// string[i.....j] is palindrome.
-	// Else table[i][j] will be false
-	bool table[n][n];
-
-	// fill the table with value zero
-	memset(table, 0, sizeof(table));
-
-	// All substrings of length 1
-	// are palindromes
-	int maxLength = 1;
-
-	//	// Set diagonal elements value is true
-	for (int i = 0; i < n; ++i)
-
-		table[i][i] = true;
-
-	// check for sub-string of length 2.
-	// Compare adjacent character
-	int start = 0;
-
-	for (int i = 0; i < n - 1; ++i)
-	{
-		if (string[i] == string[i + 1])
-
+		if (str[i] == str[i + 1])	// string with length 2
 		{
-			// When adjacent elements is similar
-			table[i][i + 1] = true;
-
-			// Change resultant length
-			start = i;
-
-			maxLength = 2;
-
+			dp[i][i + 1] = 1;
+			startIndex = i;
+			endIndex = 2;
 		}
 	}
 
-	// Check for lengths greater than 2.
-	// k is length of substring
-	for (int k = 3; k <= n; ++k)
+	for (len = 3; len <= n; len++)
 	{
-		// Fix the starting index
-		for (int i = 0; i < n - k + 1; ++i)
+
+		for (i = 0; i <= n - len ; i++)
 		{
-			// Get the ending index of substring from
-			// starting index i and length k
-			int j = i + k - 1;
+			j = i + len - 1;
 
-			// checking for sub-string from ith index to
-			// jth index iff str[i+1] to str[j-1] is a
-			// palindrome
-			if (table[i + 1][j - 1] && string[i] == string[j])
+			if (dp[i + 1][j - 1] == 1 && str[i] == str[j])
 			{
-				table[i][j] = true;
-
-				if (k > maxLength)
+				dp[i][j] = 1;
+				if (len > endIndex)
 				{
-					// Update resultant starting location
-					start = i;
-
-					// Change resultant length
-					maxLength = k;
-
+					startIndex = i;
+					endIndex = len;
 				}
 			}
 		}
 	}
 
-	// Display resultant palindrome
 	printf("Longest palindrome substring is: ");
+	for (i = startIndex; i <= startIndex + endIndex - 1; i++)
+		printf("%c", str[i]);
+	printf("\nLength is: %d", endIndex);
 
-	printSubStr(string, start, start + maxLength - 1);
+}
 
-	// return length of resultant palindrome
-	return maxLength;
+int main()
+{
+
+	char str[MAX];
+	printf("\nenter the input string::");
+	scanf("%[^\n]%*c", str);
+	longestPalSubstr(str);
+	return 0;
 
 }
