@@ -26,7 +26,7 @@ void longestPalSubstr(char str[MAX])
 		}
 	}
 
-	for (len = 3; len <= n; len++)
+	for (len = 3; len <= n; len++)    // string with length>2
 	{
 
 		for (i = 0; i <= n - len ; i++)
