@@ -1,101 +1,51 @@
 #include <stdio.h>
-#include <limits.h>
 #include <stdlib.h>
-#define MAX 100
+#define MAX 20
+int q[MAX], f = 0, r = -1, n, adj[MAX][MAX], visited[MAX];
 
-int n;
-int adj[MAX][MAX];
-int visited[MAX];
-void create_graph();
-void init(int arr[MAX][MAX]);
-void printAdjMatrix(int adj[MAX][MAX]);
-void BF_Traversal();
-void BFS(int v);
-void DF_Traversal();
-void DFS(int v);
-
-int queue[MAX], front = -1, rear = -1;
-void insert_queue(int vertex);
-int delete_queue();
-int isEmpty_queue();
-
-void insert_queue(int vertex)
+void enqueue(int v)
 {
-	if (rear == MAX - 1)
-		printf("Queue Overflow\n");
+	if (r == MAX - 1)
+		printf("\nQueue Overflow, Unable to insert");
 	else
-	{
-		if (front == -1)
-			front = 0;
-		rear = rear + 1;
-		queue[rear] = vertex;
-	}
+		q[++r] = v;
+
 }
 
-int delete_queue()
+int dequeue()
 {
-	int delete_item;
+	if (f == (r + 1))
+		printf("\nQueue Underflow, Unable to delete");
 
-	if (front == -1 || front > rear)
-	{
-		printf("Queue Underflow\n");
-		exit(1);
-	}
+	return q[f++];
 
-	delete_item = queue[front];
-	front = front + 1;
-	return delete_item;
 }
 
-int isEmpty_queue()
+int isEmpty()
 {
-	if (front == -1 || front > rear)
+	if (f > r)
 		return 1;
-	else
-		return 0;
+	return 0;
 }
 
-// Initialize the matrix to zero
-
-void init(int arr[MAX][MAX])
+void createGraph()
 {
+	printf("\n enter the number of nodes in the graph:");
+	scanf("%d", &n);
 	int i, j;
+
 	for (i = 0; i < n; i++)
+	{
+		printf("Enter the adjacency list for node %d:", i + 1);
 		for (j = 0; j < n; j++)
-			arr[i][j] = 0;
-}
-
-void create_graph()
-{
-	int count, max_edge, origin, destin;
-	max_edge = n *(n - 1);
-	for (count = 1; count <= max_edge; count++)
-	{
-		printf("Enter the end points of the edge %d(-1 -1 to quit) : ", count);
-		scanf("%d %d", &origin, &destin);
-		if ((origin == -1) && (destin == -1))
-			break;
-		if (origin >= n || destin >= n || origin < 0 || destin < 0)
-		{
-			printf("Invalid edge!\n");
-			count--;
-		}
-		else
-		{
-			adj[origin][destin] = 1;
-			adj[destin][origin] = 1;
-		}
+			scanf("%d", &adj[i][j]);
 	}
-}
 
-void printAdjMatrix(int adj[MAX][MAX])
-{
-	// Traverse the adj[][]
-	for (int i = 0; i < n; i++)
+	printf("\nThe adjacency matrix of the graph is:\n");
+	for (i = 0; i < n; i++)
 	{
-		for (int j = 0; j < n; j++)
+		for (j = 0; j < n; j++)
 		{
-			// Print the value at adj[i][j]
 			printf("%d ", adj[i][j]);
 		}
 
@@ -103,80 +53,47 @@ void printAdjMatrix(int adj[MAX][MAX])
 	}
 }
 
-void BF_Traversal()
+void displayChoice()
 {
-	int v;
-	for (v = 0; v < n; v++)
-		visited[v] = 0;
-	printf("Enter Start Vertex for BFS: \n");
-	scanf("%d", &v);
-	printf("Following is Breadth First Traversal (starting from vertex %d):", v);
-	BFS(v);
+	printf("\nPlease enter: \n\tTo Create Graph: 1 \n\tTo BFS Traversal: 2 \n\tTo DFS Traversal: 3 \n\tTo Exit: 4\n\n");
 }
 
-void BFS(int v)
+void BFS(int s)
 {
-	int i;
-	printf("%d ", v);
-	visited[v] = 1;
-	insert_queue(v);
-
-	while (!isEmpty_queue())
+	printf("%d", s);
+	visited[s] = 1;
+	enqueue(s);
+	while (!isEmpty())
 	{
-		v = delete_queue();
-		for (i = 0; i < n; i++)
+		s = dequeue();
+		for (int i = 0; i < n; i++)
 		{
-			if (adj[v][i] == 1 && visited[i] == 0)
+			if (adj[s][i] == 1 && visited[i] == 0)
 			{
 				printf("%d ", i);
 				visited[i] = 1;
-				insert_queue(i);
-
+				enqueue(i);
 			}
 		}
 	}
 
 	printf("\n");
+
 }
 
-void DF_Traversal()
+void DFS(int s)
 {
-	int v;
-	for (v = 0; v < n; v++)
-		visited[v] = 0;
-	printf("Enter Start Vertex for DFS: \n");
-	scanf("%d", &v);
-	printf("Following is Depth First Traversal (starting from vertex %d):", v);
-	DFS(v);
-}
-
-void DFS(int v)
-{
-	int j;
-
-	if (visited[v] == 0)
+	printf("%d ", s);
+	visited[s] = 1;
+	for (int i = 0; i < n; i++)
 	{
-		printf("%d ", v);
-		visited[v] = 1;
-
-		for (j = 0; j < n; j++)
-		{
-			if (adj[v][j] == 1 && visited[j] == 0)
-				DFS(j);
-		}
+		if (adj[s][i] == 1 && visited[i] == 0)
+			DFS(i);
 	}
-}
-
-void displayChoice()
-{
-	printf("\nPlease enter: \n\tTo Create Graph: 1 \n\tTo Print Adjacencymatrix: 2 \n\tTo BFS Traversal: 3 \n\tTo DFS Traversal: 4 \n\tTo Exit: 5\n\n");
 }
 
 int main()
 {
-	printf("Enter number of vertices : ");
-	scanf("%d", &n);
-	init(adj);
 	displayChoice();
 	while (1)
 	{
@@ -185,21 +102,30 @@ int main()
 		scanf("%d", &choice);
 		if (choice == 1)
 		{
-			create_graph();
+			createGraph();
 		}
 		else if (choice == 2)
 		{
-			printAdjMatrix(adj);
+			for (int i = 0; i < n; i++)
+				visited[i] = 0;
+			int v;
+			printf("Enter Start Vertex for BFS: \n");
+			scanf("%d", &v);
+			printf("Following is Breadth First Traversal (starting from vertex %d):", v);
+			BFS(v);
+
 		}
 		else if (choice == 3)
 		{
-			BF_Traversal();
+			for (int i = 0; i < n; i++)
+				visited[i] = 0;
+			int v;
+			printf("Enter Start Vertex for DFS: \n");
+			scanf("%d", &v);
+			printf("Following is Depth First Traversal (starting from vertex %d):", v);
+			DFS(v);
 		}
 		else if (choice == 4)
-		{
-			DF_Traversal();
-		}
-		else if (choice == 5)
 		{
 			exit(1);
 		}
